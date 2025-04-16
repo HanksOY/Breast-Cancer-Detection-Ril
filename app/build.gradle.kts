@@ -16,7 +16,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         // Add Ultravox API key as a BuildConfig field
-        buildConfigField("String", "ULTRAVOX_API_KEY", "\"C46oeM2e.cIdZ7OsyRHwYgR3CO3wOgUT6zWJEXKYb\"")
+        buildConfigField("String", "ULTRAVOX_API_KEY", "\"123456\"")
         buildConfigField("String", "ULTRAVOX_MODEL_NAME", "\"fixie-ai/ultravox\"")
         buildConfigField("String", "ULTRAVOX_VOICE_ID", "\"b0e6b5c1-3100-44d5-8578-9015aa3023ae\"")
         buildConfigField("String", "ULTRAVOX_VOICE_NAME", "\"Jessica\"")
