@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Final</string>
+    <string name="hello_i_m_ril_your_advanced_medical_assistant_how_can_i_help_with_your_breast_cancer_diagnostics_today">Hello, I\'m Ril, your advanced medical assistant. How can I help with your breast cancer diagnostics today?</string>
+    <string name="ril_ai">Ril AI</string>
+    <string name="_1_17_am">1:17 AM</string>
+    <string name="avatar_desc" />
+    <string name="r">R</string>
+    <string name="breast_cancer_diagnostic_ai">Breast Cancer Diagnostic AI</string>
+    <string name="ril_medical_assistant">Ril Medical Assistant</string>
+    <string name="attach_image">Attach Image</string>
+    <string name="attach_file">Attach File</string>
+    <string name="menu">Menu</string>
+    <string name="type_your_medical_query">Type your medical query...</string>
+    <string name="voice">Voice</string>
+    <string name="notifications">Notifications</string>
+    <string name="send">Send</string>
+    <string name="active">Active</string>
+    <string name="medical_assistant">Medical Assistant</string>
+    <string name="test_api">Test API</string>
+    <string name="ril">Ril</string>
+    <string name="sample_user_message">Sample user message</string>
+</resources>
