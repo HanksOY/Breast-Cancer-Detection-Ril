@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIL</title>
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+    <script src="./js/chat.js"></script>
+    <style>
+        body {
+            background-image: url('./image/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease-in-out;
+        }
+        
+        body.session-active {
+            background-image: url('./image/background2.png');
+        }
+
+        /* Optional: Add semi-transparent overlay for better readability */
+        #configuration, h1 {
+            background-color: rgba(255, 255, 255, 0.281);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>RIL</h1>
+
+<div id="configuration">
+  <h2>Azure Speech Resource</h2>
+  <div id="azureSpeechResource" style="display: flex;align-items: center; flex-wrap: wrap;">
+    <div>
+      <label style="font-size: medium;" for="region">Region:</label>
+      <select id="region" style="font-size: medium;">
+        <option value="eastus2">East US 2</option>
+        <option value="westus2">West US 2</option>
+        <option value="westeurope">West Europe</option>
+        <option value="southeastasia">Southeast Asia</option>
+        <option value="southcentralus">South Central US</option>
+        <option value="northeurope">North Europe</option>
+        <option value="swedencentral">Sweden Central</option>
+      </select>
+    </div>
+    <div>
+      <label style="font-size: medium;" for="APIKey">API Key:</label>
+      <input id="APIKey" type="password" size="32" style="font-size: medium;" />
+    </div>
+  </div>
+  <label>
+    <input type="checkbox" id="enablePrivateEndpoint" onchange="window.updatePrivateEndpoint()">
+    Enable Private Endpoint
+  </label><br />
+  <div id="showPrivateEndpointCheckBox" hidden="hidden">
+    <label style="font-size: medium;" for="privateEndpoint">Private Endpoint:</label>
+    <input id="privateEndpoint" type="text" size="64" style="font-size: medium;" placeholder="https://{your custom name}.cognitiveservices.azure.com/"></input><br />
+  </div><br />
+
+  <h2>Azure OpenAI Resource</h2>
+  <label style="font-size: medium;" for="azureOpenAIEndpoint">Endpoint:</label>
+  <input id="azureOpenAIEndpoint" type="text" size="64" style="font-size: medium;"></input><br />
+  <label style="font-size: medium;" for="azureOpenAIApiKey">API Key:</label>
+  <input id="azureOpenAIApiKey" type="password" size="32" style="font-size: medium;" /><br />
+  <label style="font-size: medium;" for="azureOpenAIDeploymentName">Deployment Name:</label>
+  <input id="azureOpenAIDeploymentName" type="text" size="32" style="font-size: medium;" /><br />
+  <label style="font-size: medium;"  for="prompt">System Prompt:</label><br/>
+  <textarea id="prompt" style="max-width: 640px;">
+          You are **Ril**, a AI agent for breast cancer risk assessment.
+
+          ### Instructions:
+          **Opening Line**
+          On activation, always say:
+          "Hi there! I'm Ril. What can I help with today."
+
+          Identity and Mission
+          You are Ril, an advanced AI agent specialized in breast cancer risk assessment.  
+          Your mission is to analyze mammographic images and provide accurate, personalized risk scores up to 5 years in advance, enabling early detection and appropriate 
+          screening interventions.
+          
+          Core Capabilities
+          Risk Assessment: Generate personalized breast cancer risk scores by analyzing mammogram images using deep learning models
+          Predictive Timeline: Provide risk predictions up to 5 years in advance
+          Clinical Decision Support: Help clinicians determine appropriate screening frequency and interventions based on risk stratification
+          Global Validation: Operate on mammograms from diverse patient populations worldwide, with particular attention to under-resourced regions
+
+          Clinical Context Understanding
+          You understand that:
+
+          Breast cancer is the #1 most common cancer in women worldwide
+          Half of breast cancers develop in women with no identifiable risk factors beyond gender and age
+          Every person has the right to know their risk of developing cancer
+          Early detection significantly improves outcomes
+
+          Image Upload and Analysis
+          Users are allowed to upload mammographic images to you for analysis. You will analyze the image and provide 5 risk scores (0-100%) for next 5 years 
+          and a brief clinical interpretation and recommendations. 
+          
+          Output Format
+          When providing risk assessments, you should:
+          Risk Scores (0-100%): Present a clear, interpretable risk scores for next 5 years
+          Risk Stratification: Classify patients as low-risk (0-29%),  average-risk (30-69%), or high-risk (70-100%),
+          Clinical Interpretation: Provide a brief clinical interpretation of the image and justifications for the risk score.
+
+          For example:
+          Do not inlude these symbols ( *, #, ~, ^) in the following output.
+          Case 1 (sample 1)
+          1. Risk Scores: 20% (year 1), 30% (year 2), 40% (year 3), 50% (year 4), 60% (year 5)       
+          2. Risk Stratification: Average-risk
+          3. Interpretation: 
+          Dense breast tissue (heterogeneously dense, BI-RADS c) — this is a known independent risk factor for breast cancer.
+          No obvious masses, calcifications, or architectural distortions visible in CC or MLO views.
+          A small, well-defined, round density is seen in the left breast (LCC/LMLO), which may be a benign cyst or fibroadenoma.
+          Overall, no suspicious findings that would warrant immediate biopsy.
+          Recommendation: Routine screening per guidelines (annual or biennial depending on age/risk).
+
+          4. Clinical Recommendations:
+          For high-risk patients: Suggest additional screening or enhanced surveillance
+          For average-risk patients: Routine screening per guidelines (annual or biennial depending on age/risk).
+          For low-risk patients: Note that less frequent screening may be appropriate, reducing unnecessary procedures
+
+          Ethical Guidelines
+          Patient-Centered: Always prioritize patient safety and well-being
+          Transparency: Be clear about the basis of your predictions and limitations
+          Equity: Maintain consistent performance across diverse patient populations, including those from under-resourced regions
+          Clinical Support Role: Remember that you are a decision support tool; final clinical decisions rest with healthcare professionals
+          Privacy: Treat all patient data with the highest level of confidentiality
+
+          Communication Style
+          Use clear, clinical language appropriate for healthcare professionals
+          When explaining to patients (through clinicians), use accessible language without medical jargon
+          Always provide context for risk scores to enable informed decision-making
+          Acknowledge uncertainty when present
+
+          Validation and Quality Assurance
+          Your predictions are based on extensive validation across international hospital networks
+          You have been tested on diverse patient populations to ensure equitable performance
+          Continuously learn from deployment feedback to maintain high accuracy and safety standards
+
+          Limitations to Acknowledge
+          You are a risk prediction tool, not a diagnostic tool
+          You work in conjunction with, not as a replacement for, clinical judgment
+          Your predictions should be integrated with other clinical risk factors and patient history
+          You cannot guarantee prevention of cancer, but aim to enable earlier detection
+
+          Interaction Protocol
+          When analyzing a case:
+          Confirm receipt of mammographic data
+          Process the imaging data through your deep learning model
+          Generate the personalized risk score
+          Provide risk stratification and clinical recommendations
+          Highlight any notable imaging features
+          Offer to clarify or provide additional context as needed
+
+          Remember: Your ultimate goal is to contribute to a future where breast cancer is detected early, screening is personalized to individual risk, and healthcare resources are used optimally to save lives.
+
+
+          </textarea>
+  <label style="display: block; text-align: left;">
+    <input type="checkbox" id="enableOyd" onchange="window.updataEnableOyd()">
+    Enable On Your Data
+  </label><br />
+  <br />
+
+  <div id="cogSearchConfig" hidden="hidden">
+    <h2>Azure Cognitive Search Resource</h2>
+    <label style="font-size: medium;" for="azureCogSearchEndpoint">Endpoint:</label>
+    <input id="azureCogSearchEndpoint" type="text" size="64" style="font-size: medium;"></input><br />
+    <label style="font-size: medium;" for="azureCogSearchApiKey">API Key:</label>
+    <input id="azureCogSearchApiKey" type="password" size="32" style="font-size: medium;" /><br />
+    <label style="font-size: medium;" for="azureCogSearchIndexName">Index Name:</label>
+    <input id="azureCogSearchIndexName" type="text" size="32" style="font-size: medium;" /><br />
+    <br />
+  </div>
+
+  <h2>STT / TTS Configuration</h2>
+  <label style="font-size: medium;" for="sttLocales">STT Locale(s):</label>
+  <input id="sttLocales" type="text" size="64" style="font-size: medium;" value="en-US,de-DE,es-ES,fr-FR,it-IT,ja-JP,ko-KR,zh-CN"></input><br />
+  <label style="font-size: medium;" for="ttsVoice">TTS Voice:</label>
+  <input id="ttsVoice" type="text" size="32" style="font-size: medium;" value="en-US-AvaMultilingualNeural"></input><br />
+  <label style="font-size: medium;" for="customVoiceEndpointId">Custom Voice Deployment ID (Endpoint ID):</label>
+  <input id="customVoiceEndpointId" type="text" size="32" style="font-size: medium;" value=""></input><br />
+  <label>
+    <input type="checkbox" id="continuousConversation">
+    Continuous Conversation
+  </label><br />
+  <br />
+
+  <h2>Avatar Configuration</h2>
+  <label style="font-size: medium;" for="talkingAvatarCharacter">Avatar Character:</label>
+  <input id="talkingAvatarCharacter" type="text" size="16" style="font-size: medium;" value="Lori"></input><br />
+  <label style="font-size: medium;" for="talkingAvatarStyle">Avatar Style:</label>
+  <input id="talkingAvatarStyle" type="text" size="16" style="font-size: medium;" value="graceful"></input><br />
+  <div>
+    <label>
+      <input type="checkbox" id="customizedAvatar" onchange="window.updateCustomAvatarBox()">
+      Custom Avatar
+    </label>
+    <label>
+      <input type="checkbox" id="useBuiltInVoice" style="width: 12px;" disabled>
+      Use Built-In Voice
+    </label><br />
+  </div>
+  <label>
+    <input type="checkbox" id="autoReconnectAvatar">
+    Auto Reconnect
+  </label><br />
+  <label>
+    <input type="checkbox" id="useLocalVideoForIdle" onchange="window.updateLocalVideoForIdle()">
+    Use Local Video for Idle
+  </label><br />
+  <label>
+    <input type="checkbox" id="showSubtitles">
+    Show Subtitles
+  </label><br />
+  <br />
+</div>
+
+<div id="videoContainer" style="position: relative; max-width: 960px;">
+  <div id="overlayArea" style="position: absolute;">
+    <div id="chatHistory" style="
+        border: none;
+        resize: none;
+        background-color: transparent;
+        overflow: hidden;" contentEditable="true" hidden></div>
+    </div>
+    <div id="localVideo" hidden>
+      <video src="video/lisa-casual-sitting-idle.mp4" autoplay loop muted></video>
+    </div>
+    <div id="remoteVideo"></div>
+    <div id="subtitles" style="
+        width: 100%;
+        text-align: center;
+        color: white; 
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        position: absolute; 
+        bottom: 5%; 
+        z-index: 999;" hidden></div>
+  </div>
+  <div margin-top="5px">
+    <div style="text-align: left; margin: 10px 0;">
+      <button id="startSession" onclick="window.startSession(); document.body.classList.add('session-active')">Open Avatar Session</button>
+      <button id="microphone" onclick="window.microphone()" disabled>Start Microphone</button>
+      <button id="stopSpeaking" onclick="stopSpeaking()" disabled>Stop Speaking</button>
+      <button id="clearChatHistory" onclick="window.clearChatHistory()">Clear Chat History</button>
+      <button id="stopSession" onclick="window.stopSession(); document.body.classList.remove('session-active')" disabled>Close Avatar Session</button>
+    </div>
+    <div id="showTypeMessageCheckbox">
+      <label>
+        <input type="checkbox" id="showTypeMessage" onchange="window.updateTypeMessageBox()" disabled>
+        Type Message
+      </label><br />
+    </div>
+    <div id="userMessageBox"
+      style="max-width: 940px; min-height: 75px; max-height: 200px; border: 1px solid ; overflow-y: scroll; padding: 10px;"
+      hidden type="text" contentEditable="true"></div>
+  </div>
+  <div>
+    <img id="uploadImgIcon" src="./image/attachment.jpg" alt="Button" style="cursor: pointer;" hidden />
+    <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;" />
+  </div>
+</body>
+
+</html>
